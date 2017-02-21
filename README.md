@@ -12,3 +12,7 @@ Dit script verzorgt jouw Kamergotchi helemaal automatisch voor je!
 5. Wait for terminal output
 6. Profit
 ```
+
+## Sorry Arjen
+It had to be done.
+![Farao der Nederlanden](doc/Farao-der-Nederlanden.jpg)
