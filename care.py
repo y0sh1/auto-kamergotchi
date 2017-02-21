@@ -24,13 +24,8 @@ class Care:
         while 'message' not in response:
             stats = response['game']['current']
             lowest_stat = lowest(stats)
-            current_time = datetime.now()
-            last_reset_time = datetime.strptime(response['game']['careReset'], "%Y-%m-%dT%H:%M:%S.%fZ")
-            claim_diff = (current_time - last_reset_time).total_seconds()
-            if claim_diff >= response['game']['claimLimitSeconds']:
-                self.claim_bonus()
-                print("We claimed a bonus")
             response = self.post_to_api(json.dumps({"bar": lowest_stat}))
+
         print("All filled up for now")
 
     def feed(self):
@@ -48,6 +43,16 @@ class Care:
             response = r.json()
             return response
 
+    def check_claim(self):
+        response = self.game_info()
+        if 'message' not in response:
+            current_time = datetime.now()
+            last_reset_time = datetime.strptime(response['game']['careReset'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            claim_diff = (current_time - last_reset_time).total_seconds()
+            if claim_diff >= response['game']['claimLimitSeconds']:
+                self.claim_bonus()
+                print("We claimed a bonus")
+
     def claim_bonus(self):
         with requests.Session as s:
             r = s.post(self.url + "/game/claim", headers=self.headers, verify=True)
@@ -56,7 +61,7 @@ class Care:
 
     def post_to_api(self, payload):
         with requests.Session() as s:
-            r = s.post("https://api.kamergotchi.nl/game/care", headers=self.headers, verify=True, data=payload)
+            r = s.post(self.url + "/game/care", headers=self.headers, verify=True, data=payload)
             response = r.json()
             if 'message' in response:
                 print(response['message'])
@@ -75,3 +80,4 @@ def lowest(dictionary):
 if __name__ in '__main__':
     Game = Care()
     Game.fill_up()
+    Game.check_claim()
