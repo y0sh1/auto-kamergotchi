@@ -57,7 +57,7 @@ def lowest(dictionary):
     """Return the key from a dictionary that has the lowest value"""
     lowest_key = None
     lowest_value = None
-    for k, v in dictionary.iteritems():
+    for k, v in dictionary.items():
         if lowest_key is None:
             lowest_key = k
             lowest_value = v
