@@ -7,14 +7,16 @@ class Care:
     token = None
     config = configparser.ConfigParser()
 
-
-    headers = {'User-Agent': 'kamergotchi/86 CFNetwork/808.3 Darwin/16.3.0',
+    url = ""
+    headers = {'User-Agent': '',
                'x-player-token': '',
                'content-type': 'application/json;charset=utf-8'}
 
     def __init__(self):
         self.config.read('config.ini')
         self.headers['x-player-token'] = self.config['kamergotchi']['token']
+        self.headers['User-Agent'] = self.config['kamergotchi']['useragent']
+        self.url = self.config['kamergotchi']['url']
 
     def feed(self):
         return self.post_to_api(json.dumps({"bar": "food"}))
