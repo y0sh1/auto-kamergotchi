@@ -1,9 +1,10 @@
 import requests
 import configparser
 import json
+from datetime import datetime
+
 
 class Care:
-
     token = None
     config = configparser.ConfigParser()
 
@@ -23,6 +24,12 @@ class Care:
         while 'message' not in response:
             stats = response['game']['current']
             lowest_stat = lowest(stats)
+            current_time = datetime.now()
+            last_reset_time = datetime.strptime(response['game']['careReset'], "%Y-%m-%dT%H:%M:%S.%fZ")
+            claim_diff = (current_time - last_reset_time).total_seconds()
+            if claim_diff >= response['game']['claimLimitSeconds']:
+                self.claim_bonus()
+                print("We claimed a bonus")
             response = self.post_to_api(json.dumps({"bar": lowest_stat}))
         print("All filled up for now")
 
@@ -41,6 +48,12 @@ class Care:
             response = r.json()
             return response
 
+    def claim_bonus(self):
+        with requests.Session as s:
+            r = s.post(self.url + "/game/claim", headers=self.headers, verify=True)
+            response = r.json()
+            return response
+
     def post_to_api(self, payload):
         with requests.Session() as s:
             r = s.post("https://api.kamergotchi.nl/game/care", headers=self.headers, verify=True, data=payload)
@@ -53,19 +66,10 @@ class Care:
                 print("%d remaining" % remaining)
             return response
 
+
 def lowest(dictionary):
     """Return the key from a dictionary that has the lowest value"""
-    lowest_key = None
-    lowest_value = None
-    for k, v in dictionary.items():
-        if lowest_key is None:
-            lowest_key = k
-            lowest_value = v
-        else:
-            if v < lowest_value:
-                lowest_key = k
-                lowest_value = v
-    return lowest_key
+    return min(dictionary.items(), key=lambda x: x[1])[0]
 
 
 if __name__ in '__main__':
