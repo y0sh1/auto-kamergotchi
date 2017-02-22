@@ -39,7 +39,7 @@ class Care:
 
     def game_info(self):
         with requests.Session() as s:
-            r = s.get("https://api.kamergotchi.nl/game", headers=self.headers, verify=True)
+            r = s.get(self.url + "/game", headers=self.headers, verify=True)
             response = r.json()
             return response
 
@@ -49,12 +49,12 @@ class Care:
             current_time = datetime.now()
             last_reset_time = datetime.strptime(response['game']['careReset'], "%Y-%m-%dT%H:%M:%S.%fZ")
             claim_diff = (current_time - last_reset_time).total_seconds()
-            if claim_diff >= response['game']['claimLimitSeconds']:
+            if claim_diff >= 1800:
                 self.claim_bonus()
                 print("We claimed a bonus")
 
     def claim_bonus(self):
-        with requests.Session as s:
+        with requests.Session() as s:
             r = s.post(self.url + "/game/claim", headers=self.headers, verify=True)
             response = r.json()
             return response
