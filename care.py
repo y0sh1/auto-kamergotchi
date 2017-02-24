@@ -49,7 +49,7 @@ class Care:
             current_time = datetime.now()
             last_reset_time = datetime.strptime(response['game']['careReset'], "%Y-%m-%dT%H:%M:%S.%fZ")
             claim_diff = (current_time - last_reset_time).total_seconds()
-            if claim_diff >= 1800:
+            if claim_diff >= 2700:
                 self.claim_bonus()
                 print("We claimed a bonus")
 
